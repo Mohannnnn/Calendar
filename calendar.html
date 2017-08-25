@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>日历组件</title>
+    <meta name="description" content="">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <!-- 强制竖屏 -->
+    <meta name="screen-orientation" content="portrait">
+    <meta name="x5-orientation" content="portrait">
+    <!-- 强制竖屏 end -->
+    <!-- 关闭电话识别 -->
+    <meta name="format-detection" content="telephone=no">
+    <!-- 百度禁止转码 -->
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <!-- dns预解析 -->
+    <link rel="dns-prefetch" href="//n.sinaimg.cn">
+    <!-- css reset -->
+    <style>
+        html {-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;}
+        input[type="submit"],
+        input[type="reset"],
+        input[type="button"],
+        input{-webkit-appearance:none; resize: none;}
+        img {max-width: 100%;height: auto;width:auto\9; /* ie8 */border: none;}
+        /* 初始化开始*/
+        *{margin:0; padding:0; border:none;box-sizing:border-box;}
+        body{background-color:#fff;color:#666;font:.26rem/.4rem 'Microsoft Yahei','微软雅黑','Simsun','宋体','Arial';}
+        em,i,b{font-weight: normal;font-style: normal;}
+        a{text-decoration:none; color:#969696;}
+        a:hover{ text-decoration:none;}
+        li{list-style:none;}
+        h1, h2, h3, h4, h5, h6{ font-size:100%;font-weight: normal;}
+        .clearfix:after{content:""; display:block; visibility:hidden; height:0; clear:both;}
+        .clearfix{zoom:1;}
+        .fl{float:left;}
+        .fr{float:right;}
+        input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {color:#ff806b;}
+        input:-moz-placeholder, textarea:-moz-placeholder {color: #ff806b;}
+        input::-moz-placeholder, textarea::-moz-placeholder {color: #ff806b;}
+        input:-ms-input-placeholder, textarea:-ms-input-placeholder {color: #ff806b;}
+        /*初始化结束*/
+    </style>
+    <!-- css reset end -->
+    <style>
+
+        body {
+            width: 7.5rem;
+            color:#000;
+            margin: 0 auto;
+        }
+        .calendar {
+            margin: 0.4rem 0.4rem 0 0.4rem;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            box-shadow: 0 0 0.4rem #ccc;
+            text-align: center;
+        }
+
+        .calendar h2 {
+            text-transform: uppercase;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 0.2rem 0 0 0;
+        }
+        .calendar-day,.calendar-week {
+            font-size: 0;
+        }
+        .calendar .calendar-day span:hover {
+            border: 2px solid #6a63d3;
+        }
+
+        .calendar .calendar-day span:active {
+            border: 2px solid #6a63d3;
+        }
+        .calendar .calendar-day .thisDay {
+            border: 2px solid #6a63d3;
+            color: #fff;
+            background: #6a63d3;
+        }
+        .calendar .calendar-week span {
+            border: 2px solid transparent;
+            border-radius: 50%;
+            display: inline-block;
+            height: .6rem;
+            line-height: .6rem;
+            text-align: center;
+            width: .9rem;
+            position: relative;
+            cursor: default;
+        }
+        .calendar .calendar-day span {
+            border: 2px solid transparent;
+            border-radius: 50%;
+            display: inline-block;
+            height: .9rem;
+            line-height: .9rem;
+            text-align: center;
+            width: .9rem;
+            position: relative;
+            cursor: default;
+        }
+        .calendar .calendar-day .othersday {
+            color: #ccc;
+        }
+        .gap {
+            height: .5rem;
+            background: #eee;
+        }
+        .memorandum {
+            padding: 0.4rem .5rem;
+            text-align: center;
+        }
+        .memorandum .memorandum_list {
+            width: 2rem;
+            display: inline-block;
+            padding-bottom: 0.2rem;
+            position: relative;
+        }
+        .memorandum .memorandum_list i {
+            display: block;
+            position: absolute;
+            width: 0.16rem;
+            height: 0.16rem;
+            border-radius: 50%;
+            top: 0.12rem;
+        }
+        .calendar-day .icons {
+            position: absolute;
+            width: 0.4rem;
+            height: 0.16rem;
+            top: 0.6rem;
+            left: 0.21rem;
+            text-align: center;
+            line-height: 0;
+            z-index: 10;
+        }
+        .commonicon {
+            display: inline-block;
+            width: 0.08rem;
+            height: 0.08rem;
+            border-radius: 50%;
+        }
+        .icon_1 {
+            background: #b84645;
+        }
+        .icon_2 {
+            background: #f1bb41;
+        }
+        .icon_3 {
+            background: #8bc6ee;
+        }
+        .icon_4 {
+            background: #bf63d2;
+        }
+        @media screen and (max-width:321px){
+            .calendar-day span,.calendar-week span ,.memorandum{font-size:14px}
+            .calendar h2 {
+                font-size: 15px;
+            }
+        }
+
+        @media screen and (min-width:321px) and (max-width:400px){
+            .calendar-day span,.calendar-week span,.memorandum{font-size:15px}
+            .calendar h2 {
+                font-size: 16px;
+            }
+        }
+        @media screen and (min-width:400px){
+            .calendar-day span,.calendar-week span,.memorandum{font-size:16px}
+            .calendar h2  {
+                font-size: 17px;
+            }
+        }
+
+    </style>
+    <!-- rem reset -->
+    <script>
+        (function() {
+            var docEl = document.documentElement;
+            var resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
+            var reCalc = function() {
+                var clientWidth = docEl.clientWidth;
+                if (!clientWidth) return;
+                clientWidth < 751 ? docEl.style.fontSize = clientWidth / 7.5 + 'px' : docEl.style.fontSize = 85 + 'px';
+
+            };
+            window.addEventListener(resizeEvt, reCalc, false);
+            reCalc();
+        })();
+    </script>
+    <!-- rem reset end -->
+</head>
+<body>
+<!-- 内容区域 start -->
+<div id="calendar_container"></div>
+<!-- 内容区域 end -->
+</body>
+<script src="jquery.min.js" type="text/javascript"></script>
+<script>
+    $(function(){
+        var calendar = function () {
+            var init = function (opts) {
+                this.Months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+                this.conf =  this._extends({
+                    ele : 'calendar_container',
+                    year : this._getCurrentTime().currentYear,
+                    month : this._getCurrentTime().currentMonth,
+                    url :  'http://shuning.rl.cj.sina.com.cn/client/api/calendar_v1/get_type?',
+                    callback : function(){}
+                }, opts);
+
+                this._getData();
+                this._callBack();
+            }
+            init.prototype = {
+                constructor : init,
+                /****utils****/
+                //得到当前时间
+                _getCurrentTime : function () {
+                    var time = new Date();
+                    return {
+                        currentYear  : time.getFullYear(),
+                        currentMonth : time.getMonth(),
+                        currentDay : time.getDate()
+                    }
+                },
+                //获取数据
+                _getData : function () {
+                    var year = parseInt(this.conf.year);
+                    var month = parseInt(this.conf.month) < 13 ? parseInt(this.conf.month) : this._getCurrentTime().currentMonth+1 ;
+                    var this_day = new Date(year , month , 0);
+                    var endday = this_day.getDate();
+
+                    var starttime = year + '-' + month + '-01';
+                    var endtime = year + '-' + month + '-' + endday;
+                    var url = this.conf.url + 'start_time=' + starttime + '&end_time=' + endtime;
+                    var initDoms = this._initDoms.bind(this);
+
+                    $.ajax({
+                        type: 'get',
+                        url : url,
+                        dataType : 'jsonp',
+                        success : function(data) {
+                            initDoms(data.result.data);
+                        },
+                        fail : function (data) {
+                            initDoms(data.result.data);
+                        }
+                    });
+                },
+                //初始化DOM
+                _initDoms : function (data) {
+                    var that = this;
+                    var conf = this.conf;
+                    var calendar_container =  conf.ele;
+                    var year = parseInt(conf.year);
+                    var month = parseInt(conf.month) < 13 ? parseInt(conf.month) : this._getCurrentTime().currentMonth+1;
+                    document.getElementById(calendar_container).innerHTML = assembleDom();
+
+                    //构造DOM
+                    function assembleDom () {
+                        var calendar = '<div class="calendar">' + createHead() + createWeek() + createDay() + createMemorandum() + '</div>';
+                        return calendar;
+                    }
+                    //创建头
+                    function createHead () {
+                        var monthName = that.Months[parseInt(month)-1];
+                        var headDom = '<h2 class="month" id="month">' + monthName +'</h2>';
+                        return headDom;
+                    }
+                    //创建尾部
+                    function createWeek () {
+                        var calendar_week = '<div class="calendar-week">\
+                                                <span>Sun</span>\
+                                                <span>Mon</span>\
+                                                <span>Tue</span>\
+                                                <span>Wen</span>\
+                                                <span>Thu</span>\
+                                                <span>Fri</span>\
+                                                <span>Sat</span>\
+                                            </div>';
+                        return calendar_week;
+                    }
+                    function createMemorandum () {
+                        var createMemorandum = '<div class="gap"></div>\
+                                                <div class="memorandum">\
+                                                    <span class="memorandum_list"><i class="icon_1"></i>重要事件</span>\
+                                                    <span class="memorandum_list"><i class="icon_2"></i>财务公报</span>\
+                                                    <span class="memorandum_list"><i class="icon_3"></i>假日休息</span>\
+                                                    <span class="memorandum_list"><i class="icon_4"></i>重要数据</span>\
+                                                </div>';
+                        return createMemorandum;
+                    }
+                    //创建备忘点
+                    function createIcon(thisdate) {
+                        var iconEle = '';
+                        if (data != undefined && data[thisdate]) {
+                            var thisval = data[thisdate].split(',');
+                            if (thisval != '') {
+                                thisval.forEach(function(value) {
+                                    iconEle += '<em class="commonicon icon_' + value +'"></em>'
+                                });
+                            }
+                        }
+                        return iconEle;
+                    }
+                    //格式化月和天数
+                    function formatMD (num) {
+                        return (Array(2).join(0)+num).slice(-2);
+                    }
+                    //创建天数
+                    function createDay () {
+                        var day_1 = new Date(year , month , 0);
+                        var day_2 = new Date( year + '-'+ month + '-' + 01);
+                        var currentdays = day_1.getDate();
+                        var fi_day = day_2.getDay();
+                        //拼装这个月天数和备忘
+                        var thisday = '';
+                        for(var i = 0 ; i < currentdays ; i ++) {
+                            var thisdate = year + '-' + formatMD(month) + '-' + formatMD(i+1);
+                            var createIconResult = createIcon(thisdate);
+                            if (that._getCurrentTime().currentDay == i+1) {
+                                thisday += '<span class="thisDay" date-month="'  + month + '" date-day="' + (i+1) +'">' + (i+1)+'<i class="icons">'+ createIconResult +'</i></span>';
+                            }else {
+                                thisday += '<span date-month="'  + month + '" date-day="' + (i+1) +'">' + (i+1)+'<i class="icons">'+ createIconResult +'</i></span>';
+                            }
+                        }
+                        //拼装上个月天数
+                        var prvday ='';
+                        var prvMonth,prvDay,prvDate;
+                        if(month == 1) {
+                            prvMonth = 12;
+                            prvDate = new Date(year-1 , prvMonth , 0);
+                        } else {
+                            prvMonth = month-1;
+                            prvDate = new Date(year , prvMonth , 0);
+                        }
+                        prvDay = prvDate.getDate();
+                        for(var i = fi_day-1 ; i >= 0 ; i--) {
+                            prvday += '<span class="othersday" date-month="'  + prvMonth + '" date-day="' + (prvDay-i) +'">' + (prvDay-i) +'</span>';
+                        }
+                        //拼装下个月天数
+                        var lastday = '';
+                        var lastMonth;
+                        if(month == 12) {
+                            lastMonth = 1;
+                        }else {
+                            lastMonth = month +1;
+                        }
+                        for(var i = 0 ; i < 42-currentdays-fi_day ; i++) {
+                            lastday += '<span class="othersday" date-month="'  + lastMonth + '" date-day="' + (i+1) +'">'+ (i+1) +'</span>';
+                        }
+
+                        var calendar_day = '<div class="calendar-day">' + prvday + thisday + lastday+'</div>';
+                        return calendar_day;
+                    }
+                },
+                //回调函数
+                _callBack : function () {
+                    var callback = this.conf.callback;
+                    callback();
+                },
+                //合并默认参数
+                _extends : function (destination , source) {
+                    for(var value in source) {
+                        destination[value] = source[value];
+                    }
+                    return destination;
+                }
+            };
+            return init;
+        }();
+
+        var calendar1 = new calendar({
+            ele : 'calendar_container',
+            year : 2017,
+            month : 8
+         });
+    });
+</script>
+</html>
